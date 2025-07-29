@@ -1,3 +1,4 @@
-web: "python manage.py migrate && gunicorn store.wsgi:application --log-file -"
+web: bash -c "python manage.py migrate && gunicorn store.wsgi:application --log-file -"
+
 
 
