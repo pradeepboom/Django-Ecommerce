@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Page Header -->
+<header class="bg-primary py-5 mb-4 text-white text-center shadow-sm">
+    <div class="container">
+        <h1 class="display-5 fw-bold">Order Details</h1>
+        <p class="lead text-white-50">Review order, shipping info, and update status</p>
+    </div>
+</header>
+
+<!-- Order Card -->
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white fw-semibold rounded-top-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>🛒 Order #{{ order.id }}</span>
+                        <span class="badge bg-success fs-6">${{ order.amount_paid }}</span>
+                    </div>
+                </div>
+                <div class="card-body px-4 py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-envelope"></i>
+                        <strong>Email:</strong> {{ order.email }}
+                    </div>
+
+                    <div class="mb-3">
+                        {% if order.date_shipped %}
+                            <i class="bi bi-truck"></i>
+                            <strong>Date Shipped:</strong> {{ order.date_shipped }}
+                        {% else %}
+                            <i class="bi bi-calendar"></i>
+                            <strong>Date Ordered:</strong> {{ order.date_ordered }}
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="mb-3">
+                        <h5 class="fw-bold">{{ order.full_name }}</h5>
+                        <pre class="bg-light p-3 rounded border">{{ order.shipping_address }}</pre>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="fw-bold">Items Ordered</h6>
+                    <ul class="list-group list-group-flush mb-4">
+                        {% for item in items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ item.product }} <span class="text-muted">(x{{ item.quantity }})</span></span>
+                                <span class="fw-semibold text-primary">${{ item.price }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="text-center mt-4">
+                        {% if not order.shipped %}
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="shipping_status" value="true">
+                                <button type="submit" class="btn btn-success btn-lg px-4 rounded-pill shadow-sm">
+                                    ✅ Mark as Shipped
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="shipping_status" value="false">
+                                <button type="submit" class="btn btn-danger btn-lg px-4 rounded-pill shadow-sm">
+                                    ❌ Mark as Not Shipped
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

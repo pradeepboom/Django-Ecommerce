@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Checkout</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Review your order and shipping details</p>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            
+            <!-- Order Summary -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🧾 Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% for product in cart_products %}
+                        <div class="mb-3">
+                            <strong>{{ product.name }}</strong> <br>
+                            <span class="text-muted">
+                                Price:
+                                {% if product.is_sale %}
+                                    <span class="text-success">${{ product.sale_price }}</span>
+                                {% else %}
+                                    ${{ product.price }}
+                                {% endif %}
+                            </span>
+                            <br>
+                            <small class="text-muted">
+                                Quantity:
+                                {% for key, value in quantities.items %}
+                                    {% if key == product.id|slugify %}
+                                        {{ value }}
+                                    {% endif %}
+                                {% endfor %}
+                            </small>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                    <div class="text-end">
+                        <h5><strong>Total: ${{ totals }}</strong></h5>
+                        <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-primary mt-2">
+                            🛒 Update Items
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Info -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🚚 Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'billing_info' %}">
+                        {% csrf_token %}
+                        {{ shipping_form.as_p }}
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success mt-3">
+                                ➡️ Continue To Billing
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

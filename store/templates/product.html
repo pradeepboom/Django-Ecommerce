@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container py-5">
+  <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 900px;">
+    <div class="row g-0">
+      
+      <!-- Product Image -->
+      <div class="col-md-5">
+        <img src="{{ product.image.url }}" class="img-fluid h-100 rounded-start object-fit-cover" alt="{{ product.name }}" style="object-fit: cover;">
+      </div>
+
+      <!-- Product Details -->
+      <div class="col-md-7">
+        <div class="card-body d-flex flex-column justify-content-center h-100 px-4 py-4">
+
+          <!-- Product Title -->
+          <h3 class="card-title text-center mb-3">{{ product.name }}</h3>
+
+          <!-- Product Description -->
+          <p class="card-text text-justify small">{{ product.description }}</p>
+
+          <!-- Sale Section -->
+          {% if product.is_sale %}
+            <div class="text-center mb-2">
+              <span class="badge bg-warning text-dark px-3 py-2 fs-6">On Sale!</span>
+            </div>
+            <div class="text-center fs-5">
+              <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+              <span class="ms-2 fw-bold text-danger">${{ product.sale_price }}</span>
+            </div>
+          {% else %}
+            <div class="text-center fs-5 fw-bold mt-2 mb-3">${{ product.price }}</div>
+          {% endif %}
+
+          <!-- Quantity Selector -->
+          <div class="row justify-content-center align-items-center mt-4">
+            <div class="col-auto">
+              <label for="qty-cart" class="form-label fw-semibold mb-0">Quantity:</label>
+            </div>
+            <div class="col-auto">
+              <select class="form-select form-select-sm" id="qty-cart">
+                {% for i in "12345" %}
+                  <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary me-2">Home</a>
+            <button type="button" value="{{ product.id }}" class="btn btn-primary" id="add-cart">
+              <i class="bi bi-cart-plus me-1"></i>Add to Cart
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).on('click', '#add-cart', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      type: 'POST',
+      url: '{% url "add_cart" %}',
+      data: {
+        product_id: $('#add-cart').val(),
+        product_qty: $('#qty-cart option:selected').val(),
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'post'
+      },
+      success: function(json){
+        document.getElementById("cart_quantity").textContent = json.qty;
+        location.reload();
+      },
+      error: function(xhr, errmsg, err){
+        alert("An error occurred while adding to cart.");
+      }
+    });
+  });
+</script>
+
+{% endblock %}

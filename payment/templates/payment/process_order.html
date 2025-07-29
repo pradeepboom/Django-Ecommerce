@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bold">Processing Order...</h1>
+            <p class="lead text-white-50">temporary...</p>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+
+            <!-- Order Summary -->
+            <div class="card shadow rounded-4 mb-4 border-0">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-receipt"></i> Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% for product in cart_products %}
+                        <div class="mb-4">
+                            <h6 class="mb-1">{{ product.name }}</h6>
+                            <div class="text-muted small">
+                                Price:
+                                {% if product.is_sale %}
+                                    <span class="text-success fw-bold">${{ product.sale_price }}</span>
+                                {% else %}
+                                    ${{ product.price }}
+                                {% endif %}
+                                <br>
+                                Quantity:
+                                {% for key, value in quantities.items %}
+                                    {% if key == product.id|slugify %}
+                                        {{ value }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% if not forloop.last %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="text-end mt-3">
+                        <h5><strong>Total: ${{ totals }}</strong></h5>
+                        <a href="{% url 'cart_summary' %}" class="btn btn-outline-light bg-primary btn-sm mt-2">
+                            <i class="bi bi-cart4"></i> Update Items
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Info -->
+            <div class="card shadow rounded-4 mb-4 border-0 d-flex flex-column">
+                <div class="card-header bg-info text-white rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-truck"></i> Shipping Information</h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div>
+                        <p><strong>Name:</strong> {{ shipping_info.shipping_full_name }}</p>
+                        <p><strong>Email:</strong> {{ shipping_info.shipping_email }}</p>
+                        <p><strong>Address 1:</strong> {{ shipping_info.shipping_address1 }}</p>
+                        <p><strong>Address 2:</strong> {{ shipping_info.shipping_address2 }}</p>
+                        <p><strong>City:</strong> {{ shipping_info.shipping_city }}</p>
+                        <p><strong>State:</strong> {{ shipping_info.shipping_state }}</p>
+                        <p><strong>Zipcode:</strong> {{ shipping_info.shipping_zipcode }}</p>
+                        <p><strong>Country:</strong> {{ shipping_info.shipping_country }}</p>
+                    </div>
+                    <div class="text-end mt-auto">
+                        <a href="{% url 'checkout' %}" class="btn btn-outline-light bg-info btn-sm mt-3">
+                            <i class="bi bi-pencil-square"></i> Update Shipping
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Info -->
+            <div class="card shadow rounded-4 border-0">
+                <div class="card-header bg-warning text-dark rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-credit-card-2-front-fill"></i> Billing Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{%  url 'process_order' %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {{ billing_form.as_p }}
+
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-success px-4 py-2">
+                                <i class="bi bi-lock-fill me-1"></i> Pay Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Page Header -->
+<header class="bg-success py-5 mb-4">
+    <div class="container text-center text-white">
+        <h1 class="display-5 fw-bold">Shipped Orders</h1>
+        <p class="lead text-white-50">Review and manage items that have already been shipped</p>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="my-1">Shipped Items</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle text-center">
+                            <thead class="table-success">
+                                <tr>
+                                    <th scope="col">Order #</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Customer Email</th>
+                                    <th scope="col">Date Shipped</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in orders %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'orders' item.id %}" class="text-decoration-none fw-semibold">
+                                            #{{ item.id }}
+                                        </a>
+                                    </td>
+                                    <td class="text-success fw-bold">${{ item.amount_paid }}</td>
+                                    <td>{{ item.email }}</td>
+                                    <td>{{ item.date_shipped }}</td>
+                                    
+                                        
+                                
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-muted">No shipped orders found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
